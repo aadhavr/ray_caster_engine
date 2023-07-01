@@ -21,9 +21,12 @@ GREY = (220,220,220)
 player_width, player_height = cell_size/4, cell_size/4
 player_x = (worldx - player_width) // 2
 player_y = (worldy - player_height) // 2
+player_pos = pygame.math.Vector2(player_x,player_y)
+
 player_speed = 7
-player_dx = 0
-player_dy = 0
+player_dir = pygame.math.Vector2(1, 0)
+# player_dx = 0
+# player_dy = 0
 player_a = 0
 
 
@@ -39,7 +42,7 @@ obstacles = [
     [1, 1, 1, 1, 1, 1, 1, 1],
 ]
 
-# Game loop
+# Stuff that keeps the main loop working, but can't be in there
 main = True
 clock = pygame.time.Clock()
 
@@ -63,50 +66,52 @@ while main:
     # code that prevents it from hitting the walls
     keys = pygame.key.get_pressed()
     if keys[pygame.K_a]:
+
+
         next_x = int(player_x) // cell_size
         if next_x >= 0 and not obstacles[int(player_y) // cell_size][next_x]:
             player_x -= player_speed
+
+
         player_a -= 0.1
         if player_a < 0:
             player_a += 2 * np.pi
-        player_dx = np.cos(player_a)*5
-        player_dy = np.sin(player_a)*5
+        player_dir = pygame.math.Vector2(np.cos(player_a),np.sin(player_a))
     if keys[pygame.K_d]:
         next_x = int(player_x + player_width) // cell_size
         if next_x < grid_size and not obstacles[int(player_y) // cell_size][next_x]:
             player_x += player_speed
+        
         player_a += 0.1
         if player_a > (2*np.pi):
             player_a -= 2 * np.pi
-        player_dx = np.cos(player_a)*5
-        player_dy = np.sin(player_a)*5
+        player_dir = pygame.math.Vector2(np.cos(player_a),np.sin(player_a))
     if keys[pygame.K_w]:
-        next_y = int(player_y) // cell_size
-        if next_y >= 0 and not obstacles[next_y][int(player_x) // cell_size]:
-            player_y -= player_speed
+        next_pos = player_pos + player_dir * player_speed
+        if (
+            not obstacles[int(next_pos.y) // cell_size][int(next_pos.x) // cell_size]
+        ):
+            player_pos = next_pos   
     if keys[pygame.K_s]:
-        next_y = int(player_y + player_height) // cell_size
-        if next_y < grid_size and not obstacles[next_y][int(player_x) // cell_size]:
-            player_y += player_speed
+        next_pos = player_pos + player_dir * player_speed
+        if (
+            not obstacles[int(next_pos.y) // cell_size][int(next_pos.x) // cell_size]
+        ):
+            player_pos = next_pos   
 
 
     # Draw the game objects
     window.fill(BLACK)
     
-    
-    
     # draw player
-    pygame.draw.rect(window, (255, 0, 0), (player_x, player_y, player_width, player_height))
-
+    pygame.draw.rect(window, (255, 0, 0), (*player_pos, player_width, player_height))
 
     # Calculate the end point of the line based on player's direction
     line_length = 100  # Adjust the length of the line as needed
-    line_end_x = player_x + player_dx * line_length
-    line_end_y = player_y + player_dy * line_length
+    line_end = player_pos + player_dir * line_length
 
     # Draw the line representing player's perspective
-    pygame.draw.line(window, (255, 255, 0), (player_x, player_y), (line_end_x, line_end_y))
-
+    pygame.draw.line(window, (255, 255, 0), player_pos, line_end)
 
     # draw walls to obstacles
     for y in range(grid_size):
