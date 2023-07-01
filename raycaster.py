@@ -2,35 +2,31 @@ import pygame
 import numpy as np
 import math
 
-# Initialize Pygame
 pygame.init()
 
-# Set up the game window
+# set up the game window
 worldx, worldy = 800, 600
 grid_size = 8
 cell_size = min(worldx, worldy) // grid_size
 window = pygame.display.set_mode((worldx, worldy))
 pygame.display.set_caption("Raycaster")
 
-# Colors
+# colors
 BLACK = (0, 0, 0)
 WHITE = (255,255,255)
 GREY = (220,220,220)
 
-# Player properties
+# player properties
 player_width, player_height = cell_size/4, cell_size/4
 player_x = (worldx - player_width) // 2
 player_y = (worldy - player_height) // 2
 player_pos = pygame.math.Vector2(player_x,player_y)
-
 player_speed = 7
 player_dir = pygame.math.Vector2(1, 0)
-# player_dx = 0
-# player_dy = 0
 player_a = 0
 
 
-# MAP
+# the blocks on the map
 obstacles = [
     [1, 1, 1, 1, 1, 1, 1, 1],
     [1, 0, 0, 0, 0, 0, 0, 1],
@@ -42,12 +38,12 @@ obstacles = [
     [1, 1, 1, 1, 1, 1, 1, 1],
 ]
 
-# Stuff that keeps the main loop working, but can't be in there
+# stuff that keeps the main loop working, but can't be in there
 main = True
 clock = pygame.time.Clock()
 
 while main:
-    # Handle events
+    # lets you quit
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             main = False
@@ -88,32 +84,61 @@ while main:
         player_dir = pygame.math.Vector2(np.cos(player_a),np.sin(player_a))
     if keys[pygame.K_w]:
         next_pos = player_pos + player_dir * player_speed
+        top_left = next_pos
+        top_right = next_pos + pygame.math.Vector2(player_width, 0)
+        bottom_left = next_pos + pygame.math.Vector2(0, player_height)
+        bottom_right = next_pos + pygame.math.Vector2(player_width, player_height)
         if (
-            not obstacles[int(next_pos.y) // cell_size][int(next_pos.x) // cell_size]
+            not obstacles[int(top_left.y) // cell_size][int(top_left.x) // cell_size]
+            and not obstacles[int(top_right.y) // cell_size][int(top_right.x) // cell_size]
+            and not obstacles[int(bottom_left.y) // cell_size][int(bottom_left.x) // cell_size]
+            and not obstacles[int(bottom_right.y) // cell_size][int(bottom_right.x) // cell_size]
         ):
             player_pos = next_pos   
     if keys[pygame.K_s]:
-        next_pos = player_pos + player_dir * player_speed
+        next_pos = player_pos + player_dir * -player_speed
+        top_left = next_pos
+        top_right = next_pos + pygame.math.Vector2(player_width, 0)
+        bottom_left = next_pos + pygame.math.Vector2(0, player_height)
+        bottom_right = next_pos + pygame.math.Vector2(player_width, player_height)
         if (
-            not obstacles[int(next_pos.y) // cell_size][int(next_pos.x) // cell_size]
+            not obstacles[int(top_left.y) // cell_size][int(top_left.x) // cell_size]
+            and not obstacles[int(top_right.y) // cell_size][int(top_right.x) // cell_size]
+            and not obstacles[int(bottom_left.y) // cell_size][int(bottom_left.x) // cell_size]
+            and not obstacles[int(bottom_right.y) // cell_size][int(bottom_right.x) // cell_size]
         ):
             player_pos = next_pos   
 
 
-    # Draw the game objects
+
     window.fill(BLACK)
-    
-    # draw player
     pygame.draw.rect(window, (255, 0, 0), (*player_pos, player_width, player_height))
 
-    # Calculate the end point of the line based on player's direction
-    line_length = 100  # Adjust the length of the line as needed
-    line_end = player_pos + player_dir * line_length
+    # calculate the end point of the line based on player's direction
+    line_length = 100  # adjust the length of the line as needed
+    line_end = (player_pos + pygame.math.Vector2(player_width / 2, player_height / 2)) + player_dir * line_length
 
-    # Draw the line representing player's perspective
-    pygame.draw.line(window, (255, 255, 0), player_pos, line_end)
+    ray_x = player_pos.x + player_width / 2
+    ray_y = player_pos.y + player_height / 2
 
-    # draw walls to obstacles
+    while True:
+        # figures out how much ray should move
+        ray_step_size = player_speed / line_length
+
+        # continues the ray until it hits wall
+        if obstacles[int(ray_y // cell_size)][int(ray_x // cell_size)] == 1:
+            break
+
+        # moves the ray in pointed direction, by step size
+        ray_x += player_dir.x * ray_step_size
+        ray_y += player_dir.y * ray_step_size
+
+        pygame.draw.line(window, (120, 0, 120), (player_pos.x + player_width / 2, player_pos.y + player_height / 2), (ray_x, ray_y))
+
+
+    pygame.draw.line(window, (255, 255, 0), (player_pos + pygame.math.Vector2(player_width / 2, player_height / 2)), line_end)
+
+    # draw walls to obstacles by going through rows, then columns
     for y in range(grid_size):
         for x in range(grid_size):
             if obstacles[y][x] == 1:
@@ -122,11 +147,7 @@ while main:
 
 
 
-    # Update the display
     pygame.display.flip()
-
-    # Limit the frame rate
     clock.tick(60)
 
-# Quit the game
 pygame.quit()
