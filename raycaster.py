@@ -1,14 +1,15 @@
 import pygame
 import numpy as np
-import math
 
 pygame.init()
 
+
+
 # set up the game window
-worldx, worldy = 800, 600
+worldx, worldy = 600, 600
 grid_size = 8
 cell_size = min(worldx, worldy) // grid_size
-window = pygame.display.set_mode((worldx, worldy))
+window = pygame.display.set_mode((worldx * 2, worldy))
 pygame.display.set_caption("Raycaster")
 
 # colors
@@ -17,11 +18,11 @@ WHITE = (255,255,255)
 GREY = (220,220,220)
 
 # player properties
-player_width, player_height = cell_size/4, cell_size/4
+player_width, player_height = cell_size / 4, cell_size / 4
 player_x = (worldx - player_width) // 2
 player_y = (worldy - player_height) // 2
 player_pos = pygame.math.Vector2(player_x,player_y)
-player_speed = 7
+player_speed = 15
 player_dir = pygame.math.Vector2(1, 0)
 player_a = 0
 
@@ -39,6 +40,9 @@ obstacles = [
 ]
 
 num_rays = 60
+
+raycaster_surface = pygame.Surface((worldx, worldy))
+raycaster_3d_surface = pygame.Surface((worldx, worldy))
 
 # stuff that keeps the main loop working, but can't be in there
 main = True
@@ -64,17 +68,15 @@ while main:
     # code that prevents it from hitting the walls
     keys = pygame.key.get_pressed()
     if keys[pygame.K_a]:
-
-
         next_x = int(player_x) // cell_size
         if next_x >= 0 and not obstacles[int(player_y) // cell_size][next_x]:
             player_x -= player_speed
-
 
         player_a -= 0.1
         if player_a < 0:
             player_a += 2 * np.pi
         player_dir = pygame.math.Vector2(np.cos(player_a),np.sin(player_a))
+    
     if keys[pygame.K_d]:
         next_x = int(player_x + player_width) // cell_size
         if next_x < grid_size and not obstacles[int(player_y) // cell_size][next_x]:
@@ -84,6 +86,7 @@ while main:
         if player_a > (2*np.pi):
             player_a -= 2 * np.pi
         player_dir = pygame.math.Vector2(np.cos(player_a),np.sin(player_a))
+    
     if keys[pygame.K_w]:
         next_pos = player_pos + player_dir * player_speed
         top_left = next_pos
@@ -97,6 +100,7 @@ while main:
             and not obstacles[int(bottom_right.y) // cell_size][int(bottom_right.x) // cell_size]
         ):
             player_pos = next_pos   
+
     if keys[pygame.K_s]:
         next_pos = player_pos + player_dir * -player_speed
         top_left = next_pos
@@ -112,20 +116,24 @@ while main:
             player_pos = next_pos   
 
 
+    raycaster_surface.fill(BLACK)
+    raycaster_3d_surface.fill(BLACK)
 
-    window.fill(BLACK)
-    pygame.draw.rect(window, (255, 0, 0), (*player_pos, player_width, player_height))
 
-    # calculate the end point of the line based on player's direction
-    line_length = 100  # adjust the length of the line as needed
+    # Calculate the end point of the line based on player's direction
+    line_length = 100  # Adjust the length of the line as needed
     line_end = (player_pos + pygame.math.Vector2(player_width / 2, player_height / 2)) + player_dir * line_length
 
+    distances = []
+    # Raycasting logic
     for i in range(num_rays):
         angle = player_a - np.pi / 6 + (i / num_rays) * np.pi / 3  # Adjust the field of view as needed
         ray_dir = pygame.math.Vector2(np.cos(angle), np.sin(angle))
-        
+
         ray_x = player_pos.x + player_width / 2
         ray_y = player_pos.y + player_height / 2
+
+        distances = 0
 
         while True:
             ray_step_size = player_speed / line_length
@@ -134,20 +142,30 @@ while main:
 
             if obstacles[int(ray_y // cell_size)][int(ray_x // cell_size)] == 1:
                 break
+        
+        distances += 1 * ray_step_size
+        pygame.draw.line(
+            raycaster_surface,
+            (120, 0, 120),
+            (player_pos.x + player_width / 2, player_pos.y + player_height / 2),
+            (ray_x, ray_y),
+        )
 
-        pygame.draw.line(window, (120, 0, 120), (player_pos.x + player_width / 2, player_pos.y + player_height / 2), (ray_x, ray_y))
+    print(distances)
 
-
-    pygame.draw.line(window, (255, 255, 0), (player_pos + pygame.math.Vector2(player_width / 2, player_height / 2)), line_end)
-
-    # draw walls to obstacles by going through rows, then columns
+    # Draw walls on the raycaster surface
     for y in range(grid_size):
         for x in range(grid_size):
             if obstacles[y][x] == 1:
-                pygame.draw.rect(window, WHITE, (x * cell_size, y * cell_size, cell_size, cell_size))
-                pygame.draw.rect(window, GREY, (x * cell_size, y * cell_size, cell_size, cell_size), 1)
+                pygame.draw.rect(raycaster_surface, WHITE, (x * cell_size, y * cell_size, cell_size, cell_size))
+                pygame.draw.rect(raycaster_surface, GREY, (x * cell_size, y * cell_size, cell_size, cell_size), 1)
 
-
+    # Blit the surfaces onto the main window
+    window.fill(BLACK)
+    window.blit(raycaster_surface, (0, 0))
+    window.blit(raycaster_3d_surface, (worldx, 0))
+    pygame.draw.rect(window, (255, 0, 0), (*player_pos, player_width, player_height))
+    pygame.draw.line(window, (255, 255, 0), (player_pos + pygame.math.Vector2(player_width / 2, player_height / 2)), line_end)
 
     pygame.display.flip()
     clock.tick(60)
