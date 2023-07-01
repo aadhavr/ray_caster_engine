@@ -38,6 +38,8 @@ obstacles = [
     [1, 1, 1, 1, 1, 1, 1, 1],
 ]
 
+num_rays = 60
+
 # stuff that keeps the main loop working, but can't be in there
 main = True
 clock = pygame.time.Clock()
@@ -118,20 +120,20 @@ while main:
     line_length = 100  # adjust the length of the line as needed
     line_end = (player_pos + pygame.math.Vector2(player_width / 2, player_height / 2)) + player_dir * line_length
 
-    ray_x = player_pos.x + player_width / 2
-    ray_y = player_pos.y + player_height / 2
+    for i in range(num_rays):
+        angle = player_a - np.pi / 6 + (i / num_rays) * np.pi / 3  # Adjust the field of view as needed
+        ray_dir = pygame.math.Vector2(np.cos(angle), np.sin(angle))
+        
+        ray_x = player_pos.x + player_width / 2
+        ray_y = player_pos.y + player_height / 2
 
-    while True:
-        # figures out how much ray should move
-        ray_step_size = player_speed / line_length
+        while True:
+            ray_step_size = player_speed / line_length
+            ray_x += ray_dir.x * ray_step_size
+            ray_y += ray_dir.y * ray_step_size
 
-        # continues the ray until it hits wall
-        if obstacles[int(ray_y // cell_size)][int(ray_x // cell_size)] == 1:
-            break
-
-        # moves the ray in pointed direction, by step size
-        ray_x += player_dir.x * ray_step_size
-        ray_y += player_dir.y * ray_step_size
+            if obstacles[int(ray_y // cell_size)][int(ray_x // cell_size)] == 1:
+                break
 
         pygame.draw.line(window, (120, 0, 120), (player_pos.x + player_width / 2, player_pos.y + player_height / 2), (ray_x, ray_y))
 
