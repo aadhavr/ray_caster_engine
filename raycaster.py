@@ -125,6 +125,7 @@ while main:
     line_end = (player_pos + pygame.math.Vector2(player_width / 2, player_height / 2)) + player_dir * line_length
 
     distances = []
+
     # Raycasting logic
     for i in range(num_rays):
         angle = player_a - np.pi / 6 + (i / num_rays) * np.pi / 3  # Adjust the field of view as needed
@@ -133,7 +134,7 @@ while main:
         ray_x = player_pos.x + player_width / 2
         ray_y = player_pos.y + player_height / 2
 
-        distances = 0
+        distance = 0
 
         while True:
             ray_step_size = player_speed / line_length
@@ -142,8 +143,10 @@ while main:
 
             if obstacles[int(ray_y // cell_size)][int(ray_x // cell_size)] == 1:
                 break
-        
-        distances += 1 * ray_step_size
+
+            distance += 1 * ray_step_size
+
+        distances.append(distance)
         pygame.draw.line(
             raycaster_surface,
             (120, 0, 120),
