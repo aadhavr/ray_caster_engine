@@ -2,11 +2,43 @@
 
 <div align="center">
   <img src="demo.gif" alt="Demo of Raycasting Engine">
-  <p align="center"><i>Demo of Raycasting Engine</i></p>
+  <p align="center"><br>
+<i>Demo of Raycasting Engine</i></p>
 </div>
+<br>
 
+Raycasting is a technique used in computer graphics to render a 3D scene efficiently using trigonometry and a 2D projection. In this particular implementation, I used the Pygame library to develop a raycastin engine that displays a 2D map to demonstrate the data used for calculations, alongside a 3D representation. This has been a great project for practicing manipulating data with vector operations, trigonometric functions, and visualizing it using Pygame.
 
-Raycasting is a technique used in computer graphics to render a 3D scene efficiently using trigonometry and a 2D projection. In this particular implementation, I used the Pygame library to develop a raycastin engine that displays a 2D map to demonstrate the data used for calculations, alongside a 3D representation. 
+## How it works.
+
+The code involves several mathematical calculations to achieve the raycasting effect. Here's an explanation of the key math concepts and calculations used:
+
+The code utilizes the `pygame.math.Vector2` class to perform vector operations and to represent 2D vectors. Vectors are used to store the player's position, direction, and ray directions.
+
+Trigonometric functions (such as `np.sin` and `np.cos`) are used to calculate the direction of the player and the rays. The player's direction is stored as a unit vector (`player_dir`) that represents the current angle of the player. The angle is converted to a unit vector using the `np.cos` and `np.sin` functions. 
+
+Trigonometric functions also help reduce the fisheye effect. To correct the fisheye distortion caused by the perspective projection, the code applies a correction factor to the calculated distance. This is done by multiplying the distance by the cosine of the angle between the player's direction and the ray direction. This ensures that the walls appear straight and not curved. Below is what it would look like without the necessary trig calculations.
+
+<div align="center">
+  <img src="fisheye.gif" alt="With Fisheye">
+  <p align="center"><br><i>With Fisheye</i></p>
+</div>
+<br>
+<div align="center">
+  <img src="nofisheye.gif" alt="Without Fisheye">
+  <p align="center"><i><br>Without Fisheye</i></p>
+</div>
+<br>
+
+Inside the raycasting loop, each ray is cast by calculating its direction vector. The direction is determined by taking the current angle of the player, as seen below.
+
+```
+angle = player_a - np.pi / 6 + (i / num_rays) * np.pi / 3
+ray_dir = pygame.math.Vector2(np.cos(angle), np.sin(angle))
+```
+
+The code calculates the distance between the player's position and the first intersection of the ray with a wall. This is done by iterating over the grid cells and checking if the ray intersects with any walls. 
+
 
 ## Prerequisites
 
@@ -61,45 +93,16 @@ You can modify certain parameters in the code to customize the behavior and appe
 
 Feel free to experiment with these parameters to create different maps and visualizations.
 
-## Explanation of Math
-
-The code involves several mathematical calculations to achieve the raycasting effect. Here's an explanation of the key math concepts and calculations used:
-
-The code utilizes the `pygame.math.Vector2` class to perform vector operations and to represent 2D vectors. Vectors are used to store the player's position, direction, and ray directions.
-
-Trigonometric functions (such as `np.sin` and `np.cos`) are used to calculate the direction of the player and the rays. The player's direction is stored as a unit vector (`player_dir`) that represents the current angle of the player. The angle is converted to a unit vector using the `np.cos` and `np.sin` functions. 
-
-Trigonometric functions also help reduce the fisheye effect. To correct the fisheye distortion caused by the perspective projection, the code applies a correction factor to the calculated distance. This is done by multiplying the distance by the cosine of the angle between the player's direction and the ray direction. This ensures that the walls appear straight and not curved. Below is what it would look like without the necessary trig calculations.
-
-<div align="center">
-  <img src="fisheye.gif" alt="With Fisheye">
-  <p align="center"><i>With Fisheye</i></p>
-</div>
-
-<div align="center">
-  <img src="nofisheye.gif" alt="Without Fisheye">
-  <p align="center"><i>Without Fisheye</i></p>
-</div>
-
-
-Inside the raycasting loop, each ray is cast by calculating its direction vector. The direction is determined by taking the current angle of the player, as seen below.
-
-```
-angle = player_a - np.pi / 6 + (i / num_rays) * np.pi / 3
-ray_dir = pygame.math.Vector2(np.cos(angle), np.sin(angle))
-```
-
-The code calculates the distance between the player's position and the first intersection of the ray with a wall. This is done by iterating over the grid cells and checking if the ray intersects with any walls. 
-
-
 
 ## Acknowledgements
 
 This code is a simple implementation of the raycasting technique and is inspired by classic first-person shooter games like Wolfenstein 3D. The Pygame library is used for creating the game window and handling user input. I'd also like to acknowledge and shoutout 3D Sage's YouTube channel for helping me understand raycasting better.
 
+
 ## License
 
 This code is released under the [MIT License](https://opensource.org/licenses/MIT). Feel free to modify and distribute it as needed.
+
 
 ## Future suggestions
 
