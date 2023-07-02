@@ -121,18 +121,14 @@ while main:
     raycaster_3d_surface.fill(BLACK)
 
 
-    # Calculate the end point of the line based on player's direction
-    line_length = 100  # Adjust the length of the line as needed
+    line_length = 100  # this line doesn't affect player performance. just helps dev w future changes
     line_end = (player_pos + pygame.math.Vector2(player_width / 2, player_height / 2)) + player_dir * line_length
-
     distances = []
 
     
-
-
-    # Raycasting logic
+    # raycasting logic
     for i in range(num_rays):
-        angle = player_a - np.pi / 6 + (i / num_rays) * np.pi / 3  # Adjust the field of view as needed
+        angle = player_a - np.pi / 6 + (i / num_rays) * np.pi / 3  # adjust the field of view as needed
         ray_dir = pygame.math.Vector2(np.cos(angle), np.sin(angle))
 
         ray_x = player_pos.x + player_width / 2
@@ -162,7 +158,7 @@ while main:
 
     print(distances)
 
-    # Draw walls on the raycaster surface
+    # draw walls on the raycaster surface
     for y in range(grid_size):
         for x in range(grid_size):
             if obstacles[y][x] == 1:
@@ -175,7 +171,6 @@ while main:
 
 
 
-    # Blit the surfaces onto the main window
     window.blit(raycaster_surface, (0, 0))
     window.blit(raycaster_3d_surface, (worldx, 0))
     pygame.draw.rect(window, RED, (*player_pos, player_width, player_height))
