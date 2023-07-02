@@ -14,6 +14,9 @@ pygame.display.set_caption("Raycaster")
 BLACK = (0, 0, 0)
 WHITE = (255,255,255)
 GREY = (220,220,220)
+PURPLE = (120, 0, 120)
+YELLOW = (255, 255, 0)
+RED = (255, 0, 0)
 
 # player properties
 player_width, player_height = cell_size / 4, cell_size / 4
@@ -152,7 +155,7 @@ while main:
         distances.append(distance)
         pygame.draw.line(
             raycaster_surface,
-            (120, 0, 120),
+            PURPLE,
             (player_pos.x + player_width / 2, player_pos.y + player_height / 2),
             (ray_x, ray_y),
         )
@@ -175,8 +178,8 @@ while main:
     # Blit the surfaces onto the main window
     window.blit(raycaster_surface, (0, 0))
     window.blit(raycaster_3d_surface, (worldx, 0))
-    pygame.draw.rect(window, (255, 0, 0), (*player_pos, player_width, player_height))
-    pygame.draw.line(window, (255, 255, 0), (player_pos + pygame.math.Vector2(player_width / 2, player_height / 2)), line_end)
+    pygame.draw.rect(window, RED, (*player_pos, player_width, player_height))
+    pygame.draw.line(window, YELLOW, (player_pos + pygame.math.Vector2(player_width / 2, player_height / 2)), line_end)
 
     pygame.display.flip()
     clock.tick(60)
