@@ -3,8 +3,6 @@ import numpy as np
 
 pygame.init()
 
-
-
 # set up the game window
 worldx, worldy = 600, 600
 grid_size = 8
@@ -163,8 +161,13 @@ while main:
                 pygame.draw.rect(raycaster_surface, WHITE, (x * cell_size, y * cell_size, cell_size, cell_size))
                 pygame.draw.rect(raycaster_surface, GREY, (x * cell_size, y * cell_size, cell_size, cell_size), 1)
 
+    for i in range(num_rays):
+        height = (line_length / distances[i]) * (worldy / 2)
+        pygame.draw.rect(raycaster_3d_surface, WHITE, (i * (worldx / num_rays), worldy / 2 - height / 2, worldx / num_rays, height))
+
+
+
     # Blit the surfaces onto the main window
-    window.fill(BLACK)
     window.blit(raycaster_surface, (0, 0))
     window.blit(raycaster_3d_surface, (worldx, 0))
     pygame.draw.rect(window, (255, 0, 0), (*player_pos, player_width, player_height))
