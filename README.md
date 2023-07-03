@@ -7,7 +7,7 @@
 </div>
 <br>
 
-Raycasting is a technique used in computer graphics to render a 3D scene efficiently using trigonometry and a 2D projection. In this particular implementation, I used the Pygame library to develop a raycastin engine that displays a 2D map to demonstrate the data used for calculations, alongside a 3D representation. This has been a great project for practicing manipulating data with vector operations, trigonometric functions, and visualizing it using Pygame.
+Raycasting is a technique used in computer graphics to render a 3D scene efficiently using trigonometry and a 2D projection. In this particular implementation, I used the Pygame library to develop a raycasting engine that displays a 2D map to demonstrate the data used for calculations, alongside a 3D representation. This has been a great project for practicing manipulating data with vector operations, trigonometric functions, and visualizing it using Pygame.
 
 ## How it works.
 
