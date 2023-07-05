@@ -1,7 +1,7 @@
 # Raycasting Engine
 
 <div align="center">
-  <img src="demo.gif" alt="Demo of Raycasting Engine">
+  <img src="demo-2.gif" alt="Demo of Raycasting Engine">
   <p align="center"><br>
 <i>Demo of Raycasting Engine</i></p>
 </div>
@@ -109,7 +109,6 @@ This code is released under the [MIT License](https://opensource.org/licenses/MI
 Here are some ideas and suggestions for future additions to the project:
 
 - Implement texture mapping
-- Implement dynamic lighting effects and shading.
 - Allow for barriers to be varying heights
 - Rewrite this in a lower-level language. I've written this in Python with Pygame because my background is in data analytics, but I encourage you to try to rewrite this in a lower-level language, like Rust or C with Vulkan or OpenGL.
 - Consider using techniques like frustum culling and parallel processing techniques so the program is less CPU-intenseive.
