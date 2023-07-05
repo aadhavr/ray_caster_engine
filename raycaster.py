@@ -167,7 +167,9 @@ while main:
 
     for i in range(num_rays):
         height = (line_length / distances[i]) * (worldy / 2)
-        pygame.draw.rect(raycaster_3d_surface, WHITE, (i * (worldx / num_rays), worldy / 2 - height / 2, worldx / num_rays, height))
+        SHADERS = (255-distances[i]/2, 255-distances[i]/2, 255-distances[i]/2)
+        pygame.draw.rect(raycaster_3d_surface, SHADERS, (i * (worldx / num_rays), worldy / 2 - height / 2, worldx / num_rays, height))
+        # Replaced WHITE with SHADERS
 
 
 
